@@ -27,16 +27,16 @@ int randomGenerator(int MAX) {
     return randomX;
 }
 // Function to split the binary representation into 3-bit windows (i.e. 101010 into 101 010)
-vector<string> getWindows(bitset<256>& bin) {
+vector<string> getWindows(bitset<33>& bin) {
     string binary_str = bin.to_string();  // convert bitset to string
     vector<string> windows;
 
-    // loop through the binary representation and extract 3 bits at a time
+    // loop through the binary representation and extract X bits at a time
     for (int i = 0; i < binary_str.length(); i += 3) {
         windows.push_back(binary_str.substr(i, 3));
     }
 
-    return windows; 
+    return windows; // return vector windows
 }
 
 int skipchainval() { // define a function to remove non-unique values from the current chain
@@ -46,12 +46,12 @@ int skipchainval() { // define a function to remove non-unique values from the c
     return 1;
 }
 
-int getDecimal(vector<string>& windows) {
-    int total = 0;
-    int multiplier = 2;
-    int windowmultiplier = 0;
-    int windowval = 0;
-    int temp1 = 0;
+int getDecimal(vector<string>& windows) { 
+    int total = 0; // an integer variable initialized to 0, which will be used to accumulate the decimal value of the binary number represented by the 3-bit windows.
+    int multiplier = 2; // an integer variable that is used to raise 2 to the power of the X-bit window position when calculating the decimal value.
+    int windowmultiplier = 0; // an integer variable that holds the intermediate result of the calculation to convert the current 3-bit window to its decimal value
+    int windowval = 0; //  an integer variable that stores the integer value of the current X-bit window.
+    int temp1 = 0; // an integer variable that holds the intermediate result of the calculation to convert the current 3-bit window to its decimal value. It is used to check if the next X-bit window can be added to the total without exceeding the target value n
 
     // loop through the windows from left to right
     for (int i = 0; i < windows.size(); i++) {
@@ -78,22 +78,22 @@ int getDecimal(vector<string>& windows) {
 }
 
 int txtwindow() { 
-    ofstream outputFile;
-    outputFile.open("chain.txt", ios::out);
+    ofstream outputFile; // declare output file stream
+    outputFile.open("chain.txt", ios::out); // open file for writing
 
-    for (int i = 0; i < 2000; i++) {
-        n = randomGenerator(1999);
+    for (int i = 0; i < 2000; i++) { // iterate 2000 times
+        n = randomGenerator(1999); // generate a random number between 0 and 1999
         bitset<18> bin(n); // convert the integer to binary representation
 
-        outputFile << "Number: " << n << " Length of Chain: " << tempchain.size() << " : ";
-        for (int j = 0; j < tempchain.size(); j++) {
-            outputFile << tempchain[j] << " ";
+        outputFile << "Number: " << n << " Length of Chain: " << tempchain.size() << " : ";  // write output to file
+        for (int j = 0; j < tempchain.size(); j++) {  // write output to file
+            outputFile << tempchain[j] << " ";  // write output to file
         }
-        outputFile << endl;
+        outputFile << endl; // write newline character to file
 
         tempchain.clear(); // completely clear temp chain variable
     }
-    return 0;
+    return 0; // return 0 to indicate it works
 }
 
 
@@ -101,17 +101,17 @@ int txtwindow() {
 
 int main() {
 
-    for (int i = 0; i < 200; i++) {
-        n = randomGenerator(1999);
-        bitset<256> bin(n); // convert the integer to binary representation
+    for (int i = 0; i < 200; i++) { // loop 200 times
+        n = randomGenerator(1999); // generate a random integer between 0 and 1999
+        bitset<33> bin(n); // convert the integer to binary representation
         vector<string> windows = getWindows(bin); // get the windows from the binary representation
         randomVals.push_back(randomGenerator(2000));
 
 
-        int result = getDecimal(windows);
+        int result = getDecimal(windows);  // convert the binary windows to their decimal equivalent
 
-        for (int i : tempchain) {
-            cout << i << " ";
+        for (int i : tempchain) { // iterate through the elements in the tempchain vector
+            cout << i << " "; // print the current element followed by a space
         }
         tempchain.clear(); // completely clear temp chain variable
 
