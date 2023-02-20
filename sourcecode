@@ -1,0 +1,121 @@
+#include <bitset>   // for using the bitset class
+#include <iostream> // for input and output stream operations
+#include <vector>   // for using the vector container
+#include <string>   // for using the string class
+#include <cmath> // for using the pow function
+#include <algorithm> // for sorting purposes
+#include <random>
+#include <fstream>
+using namespace std;
+
+vector<int> tempchain{ 1,2,3,4,5,6,7 };
+vector<int> randomVals{};
+
+int n;
+
+// Random seed
+random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution<> dis(1, 2000);
+
+
+// create a random number generator
+int randomGenerator(int MAX) {
+    // uniformly distributed in range (1, 20);
+    int randomX = dis(gen);
+    return randomX;
+}
+// Function to split the binary representation into 3-bit windows (i.e. 101010 into 101 010)
+vector<string> getWindows(bitset<256>& bin) {
+    string binary_str = bin.to_string();  // convert bitset to string
+    vector<string> windows;
+
+    // loop through the binary representation and extract 3 bits at a time
+    for (int i = 0; i < binary_str.length(); i += 3) {
+        windows.push_back(binary_str.substr(i, 3));
+    }
+
+    return windows;
+}
+
+int skipchainval() {
+    sort(tempchain.begin(), tempchain.end());
+    tempchain.erase(unique(tempchain.begin(), tempchain.end()), tempchain.end()); // eliminates non-unique numbers
+
+    return 1;
+}
+
+int getDecimal(vector<string>& windows) {
+    int total = 0;
+    int multiplier = 2;
+    int windowmultiplier = 0;
+    int windowval = 0;
+    int temp1 = 0;
+
+    // loop through the windows from left to right
+    for (int i = 0; i < windows.size(); i++) {
+        windowval += stoi(windows[i], nullptr, 2); // finding integer value of specific window 
+        if (windowval != 0) { // filters out zeros of windowval 
+            if (windowval > n) {
+                break; //failsafe, incase if we add the next window value and it is too big then it is left alone
+            }
+            tempchain.insert(tempchain.end(), windowval);
+            for (int h = 0; h < 3; h++) { // repeat the for loop three times
+                windowmultiplier = windowval * pow(multiplier, h + 1);
+                temp1 = windowmultiplier;
+                if (temp1 >= n) {
+                    break;
+                }
+                tempchain.insert(tempchain.end(), temp1); // adds to the chain
+            }
+        }
+        windowval = temp1;
+
+    }
+    skipchainval();
+    return total;
+}
+
+int txtwindow() {
+    ofstream outputFile;
+    outputFile.open("chain.txt", ios::out);
+
+    for (int i = 0; i < 2000; i++) {
+        n = randomGenerator(1999);
+        bitset<18> bin(n); // convert the integer to binary representation
+
+        outputFile << "Number: " << n << " Length of Chain: " << tempchain.size() << " : ";
+        for (int j = 0; j < tempchain.size(); j++) {
+            outputFile << tempchain[j] << " ";
+        }
+        outputFile << endl;
+
+        tempchain.clear(); // completely clear temp chain variable
+    }
+    return 0;
+}
+
+
+
+
+int main() {
+
+    for (int i = 0; i < 200; i++) {
+        n = randomGenerator(1999);
+        bitset<256> bin(n); // convert the integer to binary representation
+        vector<string> windows = getWindows(bin); // get the windows from the binary representation
+        randomVals.push_back(randomGenerator(2000));
+
+
+        int result = getDecimal(windows);
+
+        for (int i : tempchain) {
+            cout << i << " ";
+        }
+        tempchain.clear(); // completely clear temp chain variable
+
+    }
+
+
+    return 0;
+}
